@@ -1,0 +1,311 @@
+
+    /* ── Base ── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: #231512;
+      color: #F2E8E1;
+      font-family: 'Inter', system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── Gallery Container ── */
+    .gallery-wrapper {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: radial-gradient(circle at center, #3a2520 0%, #231512 50%, #1A0D0B 100%);
+      overflow: hidden;
+    }
+
+    /* ── Orbit Container (rotates) ── */
+    .orbit-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Circular orbit path (visual guide) ── */
+    .orbit-circle {
+      position: absolute;
+      border: 1px solid rgba(201, 169, 110, 0.1);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    /* ── Orbit radius sizes (responsive) ── */
+    @media (min-width: 1024px) {
+      .orbit-circle {
+        width: 600px;
+        height: 600px;
+      }
+    }
+    @media (max-width: 1023px) {
+      .orbit-circle {
+        width: 500px;
+        height: 500px;
+      }
+    }
+    @media (max-width: 768px) {
+      .orbit-circle {
+        width: 380px;
+        height: 380px;
+      }
+    }
+    @media (max-width: 480px) {
+      .orbit-circle {
+        width: 280px;
+        height: 280px;
+      }
+    }
+
+    /* ── Central hub ── */
+    .central-hub {
+      position: absolute;
+      z-index: 20;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+
+    .central-hub h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 5vw, 3.2rem);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: #F2E8E1;
+      line-height: 1.2;
+      max-width: 320px;
+    }
+
+    .book-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, #C9A96E 0%, #e2c48a 100%);
+      color: #231512;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 24px rgba(201, 169, 110, 0.2);
+    }
+
+    .book-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(201, 169, 110, 0.35);
+      background: linear-gradient(135deg, #e2c48a 0%, #C9A96E 100%);
+    }
+
+    .book-btn:active {
+      transform: translateY(0);
+    }
+
+    /* ── Rotating orbit (contains satellites) ── */
+    .rotating-orbit {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      animation: rotateOrbit 50s linear infinite;
+    }
+
+    @keyframes rotateOrbit {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .rotating-orbit.paused {
+      animation-play-state: paused;
+    }
+
+    /* ── Satellite image wrapper ── */
+    .satellite {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* Counter-rotate to keep image upright */
+      animation: counterRotate 50s linear infinite;
+    }
+
+    @keyframes counterRotate {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(-360deg);
+      }
+    }
+
+    .satellite.paused {
+      animation-play-state: paused;
+    }
+
+    /* ── Satellite image ── */
+    .satellite img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform: rotate(0deg) scale(1);
+      filter: brightness(0.9);
+    }
+
+    .satellite:hover img {
+      transform: scale(1.1);
+      filter: brightness(1);
+      box-shadow: 0 12px 48px rgba(201, 169, 110, 0.3);
+    }
+
+    /* ── Responsive satellite sizes ── */
+    @media (max-width: 768px) {
+      .satellite {
+        width: 110px;
+        height: 110px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .satellite {
+        width: 90px;
+        height: 90px;
+      }
+    }
+
+    /* ── Positioning satellites on the circle ── */
+    /* Using CSS custom properties for dynamic positioning */
+    .satellite-1 { --angle: 0deg; }
+    .satellite-2 { --angle: 60deg; }
+    .satellite-3 { --angle: 120deg; }
+    .satellite-4 { --angle: 180deg; }
+    .satellite-5 { --angle: 240deg; }
+    .satellite-6 { --angle: 300deg; }
+
+    @media (min-width: 1024px) {
+      .satellite {
+        --radius: 300px;
+        left: calc(50% + var(--radius) * cos(var(--angle)) - 70px);
+        top: calc(50% + var(--radius) * sin(var(--angle)) - 70px);
+      }
+    }
+
+    @media (max-width: 1023px) and (min-width: 769px) {
+      .satellite {
+        --radius: 250px;
+        left: calc(50% + var(--radius) * cos(var(--angle)) - 55px);
+        top: calc(50% + var(--radius) * sin(var(--angle)) - 55px);
+      }
+    }
+
+    @media (max-width: 768px) and (min-width: 481px) {
+      .satellite {
+        --radius: 190px;
+        left: calc(50% + var(--radius) * cos(var(--angle)) - 55px);
+        top: calc(50% + var(--radius) * sin(var(--angle)) - 55px);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .satellite {
+        --radius: 140px;
+        left: calc(50% + var(--radius) * cos(var(--angle)) - 45px);
+        top: calc(50% + var(--radius) * sin(var(--angle)) - 45px);
+      }
+    }
+
+    /* ── Tooltip on hover ── */
+    .satellite-label {
+      position: absolute;
+      bottom: -2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #C9A96E;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .satellite:hover .satellite-label {
+      opacity: 1;
+    }
+
+    /* ── Glow effect on hover ── */
+    .satellite::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      border-radius: 28px;
+      background: radial-gradient(circle, rgba(201, 169, 110, 0.2) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+
+    .satellite:hover::before {
+      opacity: 1;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #160d0b; }
+    ::-webkit-scrollbar-thumb { background: #C9A96E; border-radius: 3px; }
+
+    /* ── Grain texture ── */
+    .grain::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      opacity: 0.03;
+    }
+
+    /* ── Info section at bottom ── */
+    .gallery-info {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #C9A96E;
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+      .gallery-info {
+        display: none;
+      }
+    }
